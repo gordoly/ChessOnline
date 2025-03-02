@@ -9,6 +9,7 @@ import jakarta.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,8 @@ import com.example.Chess.Game.ChessBoard.Board;
 import com.example.Chess.Game.ChessBoard.GameState;
 import com.example.Chess.Model.Message;
 import com.example.Chess.Model.MessageType;
+import com.example.Chess.Model.User;
+import com.example.Chess.Repository.UserRepository;
 import com.example.Chess.Service.Users;
 import com.example.Chess.Utils.MessageDecoder;
 import com.example.Chess.Utils.MessageEncoder;
@@ -29,6 +32,13 @@ public class SocketEndpoint {
     private static LinkedList<String> queue = new LinkedList<String>();
 
     private static Users users;
+
+    private static UserRepository userRepository;
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) { 
+        SocketEndpoint.userRepository = userRepository;
+    }
 
     /**
      * Setter method for injecting Users service instance.
@@ -65,7 +75,7 @@ public class SocketEndpoint {
                     // to a user matches the number provided by the user. this ensures verification of each 
                     // user's identity preventing usernames from being stolen by other users.
                     String securityNum = message.getContent();
-                    
+
                     if (users.getUser(message.getFrom()) == Integer.parseInt(securityNum)) {
                         // add the user to a queue of players.
                         players.put(message.getFrom(), session);
@@ -76,6 +86,13 @@ public class SocketEndpoint {
                         if (queue.size() >= 2) {
                             String player1 = queue.removeFirst();
                             String player2 = queue.removeFirst();
+
+                            // prevent players from playing against themselves if they end up in the queue twice
+                            if (player1.equals(player2)) {
+                                queue.add(player1);
+                                return;
+                            }
+
                             Board board = new Board(player1, player2);
                             board.initBoard();
                             games.put(players.get(player1), board);
@@ -106,6 +123,8 @@ public class SocketEndpoint {
                 if (games.containsKey(session)) {
                     // retrieves the game that the user is currently part of
                     Board board = games.get(session);
+
+                    GameState originalState = board.getState();
 
                     // check that the user is attempting to make a move on the chess board in a game that is ongoing.
                     if (message.getType() == MessageType.MOVE && board.getState() == GameState.ONGOING) {
@@ -149,6 +168,47 @@ public class SocketEndpoint {
                     // send the current chess board to both players in the game
                     sendBoard(session, board);
 
+                    // check to see if the game has just ended, if so update the user stats
+                    if (originalState == GameState.ONGOING) {
+                        Optional<User> optionalUser1 = userRepository.findUserByUsername(board.getPlayer1());
+                        Optional<User> optionalUser2 = userRepository.findUserByUsername(board.getPlayer2());
+
+                        if (optionalUser1.isPresent() && optionalUser2.isPresent() && board.getState() != GameState.ONGOING) {
+                            User user1 = optionalUser1.get();
+                            User user2 = optionalUser2.get();
+
+                            double expectedUser1 = 1/(1 + Math.pow(10, (user1.getScore() - user2.getScore())/400.0));
+                            double expectedUser2 = 1 - expectedUser1;
+
+                            double newUser1Score = user1.getScore();
+                            double newUser2Score = user2.getScore();
+
+                            if (board.getState() == GameState.WHITEWIN) {
+                                newUser1Score += 40 * (1 - expectedUser1);
+                                newUser2Score += 40 * (-1 * expectedUser2);
+                                user1.setWins(user1.getWins() + 1);
+                                user2.setLosses(user2.getLosses() + 1);
+                            } else if (board.getState() == GameState.BLACKWIN) {
+                                newUser1Score += 40 * (-1 * expectedUser1);
+                                newUser2Score += 40 * (1 - expectedUser2);
+                                user1.setLosses(user1.getLosses() + 1);
+                                user2.setWins(user2.getWins() + 1);
+                            } else if (board.getState() == GameState.DRAW) {
+                                newUser1Score += 40 * (0.5 - expectedUser1);
+                                newUser2Score += 40 * (0.5 - expectedUser2);
+                            }
+
+                            user1.setMatches(user1.getMatches() + 1);
+                            user2.setMatches(user2.getMatches() + 1);
+
+                            user1.setScore(newUser1Score);
+                            user2.setScore(newUser2Score);
+
+                            userRepository.save(user1);
+                            userRepository.save(user2);
+                        }
+                    }
+
                     if (board.getPlayer1() != null) {
                         if (players.get(board.getPlayer1()) != session)
                             sendBoard(players.get(board.getPlayer1()), board);
@@ -183,6 +243,13 @@ public class SocketEndpoint {
      */
     @OnClose
     public void onClose(Session session) {
+        for (String player: players.keySet()) {
+            if (players.get(player) == session) {
+                users.removeUser(player);
+                break;
+            }
+        }
+
         if (games.containsKey(session)) {
             Board game = games.get(session);
             if (players.get(game.getPlayer1()) == session) {
