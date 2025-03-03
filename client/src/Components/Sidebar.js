@@ -13,7 +13,7 @@ export default function Sidebar(props) {
 
     // relevant messages will be displayed if a player has been checked, checkmated or drawn
     return (
-        <aside style={{ left: props.left, top: props.top }}>
+        <aside className="sidebar" style={{ left: props.left, top: props.top }}>
             <h3>Message Board</h3>
 
             <div className="status-section">
