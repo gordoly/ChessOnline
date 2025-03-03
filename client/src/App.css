@@ -36,7 +36,12 @@ body {
   display: inline-block;
 }
 
-aside {
+main {
+  text-align: center;
+  margin-top: 10%;
+}
+
+.sidebar {
   display: inline-block;
   background-color: white;
   font-size: 16px;
@@ -47,7 +52,7 @@ aside {
   color: red;
 }
 
-aside > h3 {
+.sidebar > h3 {
   color: black;
 }
 
@@ -59,11 +64,15 @@ aside > h3 {
 header {
   background-color: black;
   text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
 }
 
 .App-logo {
   position: relative;
-  top: 12px;
+  top: 0px;
   margin-left: 20px;
 }
 
@@ -86,7 +95,7 @@ header {
 form,
 .waiting {
   text-align: center;
-  margin-top: 15%;
+  margin-top: 10%;
 }
 
 #error {
@@ -97,11 +106,12 @@ button {
   width: 500px;
   height: 100px;
   font-size: 20px;
-  background-color: green;
+  background-color: #6ea437;
+  color: white;
 }
 
 button:hover {
-  background-color: lightgreen;
+  background-color: #7eb449;
 }
 
 .gameBtns {
@@ -127,5 +137,72 @@ button:hover {
   width: 70px;
   font-size: 15px;
   margin-left: 5px;
-  color: black;
+  color: white;
+}
+
+.register-login > input {
+  margin: 1%;
+  padding: 1%;
+  width: 30%;
+  font-size: 18px;
+}
+
+.register-login > button {
+  width: 33%;
+  padding: 1.5%;
+  height: 30%;
+}
+
+.register-login {
+  margin-top: 0;
+}
+
+.register-login-title {
+  font-size: 35px;
+  margin-top: 5%;
+}
+
+.register-login-link {
+  font-size: 22px;
+  color: white;
+}
+
+.login-links {
+  display: flex;
+  gap: 15px;
+  margin-right: 1%;
+}
+
+.title {
+  flex: 1;
+  position: absolute;
+  left: 6%;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+table {
+  margin-left: 16%;
+  margin-top: 5%;
+}
+
+td, th {
+  width: 300px;
+  text-align: left;
+}
+
+.App-header > div {
+  display: flex;
+  gap: 20px;
+}
+
+.App-header > div > a {
+  margin-top: 10px;
+}
+
+a:hover {
+  text-decoration: underline;
 }
