@@ -168,7 +168,7 @@ public class SocketEndpoint {
                     // send the current chess board to both players in the game
                     sendBoard(session, board);
 
-                    // check to see if the game has just ended, if so update the user stats
+                    // check to see if the game has just ended, if so update the user stats (wins, losses and ranking points)
                     if (originalState == GameState.ONGOING) {
                         Optional<User> optionalUser1 = userRepository.findUserByUsername(board.getPlayer1());
                         Optional<User> optionalUser2 = userRepository.findUserByUsername(board.getPlayer2());
@@ -243,6 +243,7 @@ public class SocketEndpoint {
      */
     @OnClose
     public void onClose(Session session) {
+        // remove user and their security key from mapping
         for (String player: players.keySet()) {
             if (players.get(player) == session) {
                 users.removeUser(player);
@@ -250,6 +251,7 @@ public class SocketEndpoint {
             }
         }
 
+        // remove the game session that the user is part of when disconnecting
         if (games.containsKey(session)) {
             Board game = games.get(session);
             if (players.get(game.getPlayer1()) == session) {

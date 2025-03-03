@@ -58,10 +58,18 @@ public class RESTController {
     public String forward() {
         return "forward:/index.html";
     }
-
+    /**
+     * Registers a new user with the provided information in the request body of the post request.
+     * Ensures that the user credentials are validated before saving the user.
+     * 
+     * @param user the user details from the request body to be registered
+     * @return a ResponseEntity with a success message or an error message
+     */
     @PostMapping("/api/users/auth/register")
     public ResponseEntity<String> createUser(@RequestBody User user) {
         String errMsg = null;
+        
+        // validate user credentials
         if (user.getUsername() == null) {
             errMsg = "the username cannot be null.";
         } else if (user.getPassword() == null || user.getReEnteredPassword() == null) {
@@ -74,6 +82,7 @@ public class RESTController {
             errMsg = "the password and re-entered password do not match.";
         }
 
+        // encode the password and save the user details onto the database if there are no validation issues
         if (errMsg == null) {
             try {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -86,7 +95,15 @@ public class RESTController {
 
         return new ResponseEntity<String>("Error registering the user: " + errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-     
+    
+    /**
+     * Authenticates a user by verifying the provided username and password.
+     * If successful, generates a JWT token and returns it to the client.
+     * 
+     * @param user the user credentials to authenticate
+     * @return a ResponseEntity containing the JWT token if authentication is successful, 
+     *         or an error message if authentication fails
+     */
     @PostMapping("/api/users/auth/login")
     public ResponseEntity<String> authenticate(@RequestBody User user) {
         try {
@@ -107,14 +124,22 @@ public class RESTController {
         }
     }
 
+    /**
+     * Retrieves the details of the currently authenticated user and returns it to the user.
+     * 
+     * @return a ResponseEntity containing the user's details, or an error if the user is not found
+     * @throws Exception if an error occurs while processing the request or the user is not authenticated
+     */
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(path = "/api/users/get")
-    public ResponseEntity<Optional<User>> getUserDetails() {
+    public ResponseEntity<Optional<User>> getUserDetails() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         Optional<User> user = repository.findUserByUsername(username);
         if (user.isPresent()) {
+            // generates a secure number which will need to be sent in the socket messages to
+            // ensure the server can track the user's identity
             Integer secureNum = users.getUser(username);
             user.get().setSecureNum(secureNum);
             user.get().setPassword(null);
@@ -124,6 +149,11 @@ public class RESTController {
         return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * Retrieves the leaderboard by fetching all users and sorting them by score in descending order.
+     * 
+     * @return a ResponseEntity containing the sorted list of users on the leaderboard
+     */
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(path = "/api/users/leaderboard")
     public ResponseEntity<List<User>> getLeaderBoard() {
@@ -132,9 +162,16 @@ public class RESTController {
         return ResponseEntity.ok(users);
     }
 
+    /**
+     * Adds a user to a user manager if they do not already exist, allowing them to join
+     * a chess game session.
+     * 
+     * @return a ResponseEntity with a success status
+     * @throws Exception if an error occurs while processing the request or if the user is not authenticated
+     */
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(path = "/api/users/add")
-    public ResponseEntity<Object> setUsername() throws Exception {
+    public ResponseEntity<Object> addUserToList() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 

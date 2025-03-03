@@ -23,7 +23,17 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-
+    
+    /**
+     * This method filters incoming HTTP requests to check for the presence of a JWT token in the 
+     * "Authorization" header, validates it, and sets the user authentication in the Spring Security context.
+     * 
+     * @param request the HTTP request to be filtered, containing the "Authorization" header
+     * @param response the HTTP response
+     * @param filterChain the filter chain to pass the request and response to the next filter
+     * @throws ServletException if an error occurs during the request processing
+     * @throws IOException if an I/O error occurs while processing the request or response
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -37,12 +47,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // extract the JWT token from "Authorization" header and obtains the username from the JWT token
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // checks that the username in the JWT token can be found on the database
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
+            
+            // authenticates the user if the JWT token is valid
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
