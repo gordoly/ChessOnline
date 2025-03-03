@@ -222,21 +222,31 @@ export default function App(props) {
     // effect to fetch the user's username and security number when connected.
     React.useEffect(() => {
         if (connected) {
-            fetch("/api/get")
-            .then(data => {
-                if (data["status"] === 200) {
-                    return data.json();
-                }
-                else {
-                    return {};
-                }
-            })
-            .then(data => {
-                for (let key in data) {
-                    if (username === null || username["name"] !== key)
-                        setUsername({"name": key, "num": data[key]});
-                }
-            });
+            const jwt = sessionStorage.getItem("token");
+            if (jwt != null) {
+                fetch("/api/users/get", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwt}`
+                    }
+                })
+                .then(data => {
+                    if (data["status"] === 200) {
+                        return data.json();
+                    }
+                    else {
+                        sessionStorage.removeItem("token");
+                        document.location.href = "/login";
+                    }
+                })
+                .then(data => {
+                    if (username === null || username["name"] !== data["username"])
+                        setUsername({"name": data["username"], "num": data["secureNum"]});
+                });
+            }
+            else {
+                document.location.href = "/login";
+            }
         }
     }, []);
 
@@ -246,20 +256,19 @@ export default function App(props) {
         // check that the user is playing online, has a username and has no prior
         // websocket connection before connecting to the server.
         if ((username !== null || !connected) && socket.current === null) {
-            client = new WebSocket("/websocket");
+            client = new WebSocket("ws://localhost:8080/websocket");
         }
         
         // when a websocket connection is established send an initialisation message to the server
         // containing the user's username and security number
         function handleOpen() {
             let toSend = null;
-            if (connected) {
+            if (connected)
                 toSend = {"from": username["name"], "type": "INIT", "content": username["num"]};
-            }
-            else {
+            else
                 toSend = {"from": "null", "type": "INIT", "content": "SINGLE"}; 
-            }
-            client.send(JSON.stringify(toSend));
+            if (client)
+                client.send(JSON.stringify(toSend));
         }
         
         // handles reception of websocket messages from the server
@@ -309,6 +318,7 @@ export default function App(props) {
                             setTurn(false);
                         }
                     }
+
                     // if the user's username matches the "player2" field in the board object sent by
                     // by the server, set that user to be black and adjust their turns accordingly
                     else if (message["board"]["player2"] === username["name"]) {
