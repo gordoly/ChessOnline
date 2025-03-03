@@ -8,7 +8,8 @@ import Login from './Components/Login';
 import Index from './Components/Index';
 import Leaderboard from './Components/Leaderboard'
 
-// function will route users to specific pages depending on the path in the url
+// function creates the main App component to route users to specific
+// web pages depending on the url path
 function App() {
   
   return (

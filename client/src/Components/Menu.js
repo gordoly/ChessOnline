@@ -46,6 +46,7 @@ export default function Menu() {
             document.location.href = "/login";
         }
         else {
+            // get the user's details from the webserver's REST API
             fetch("/api/users/get", {
                 method: "GET",
                 headers: {
@@ -57,6 +58,7 @@ export default function Menu() {
                     const resData = await data.json();
                     setUserData(resData);
 
+                    // fetch the leader board from the API
                     fetch("/api/users/leaderboard")
                         .then(res => {
                             if (res.status === 200) {

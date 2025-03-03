@@ -1,10 +1,11 @@
 import Header from "./Header";
 import React, {useState} from "react";
 
-// function creates the leader board which ranks chess players by their ranking points
-export default function Menu() {
+// function that creates the Leader board component which provides a ranking of chess players
+export default function Leaderboard() {
     const [users, setUsers] = useState([]);
 
+    // fetch the leaderboard from the leaderboard API
     React.useEffect(() => {
         fetch("/api/users/leaderboard")
             .then(res => {
