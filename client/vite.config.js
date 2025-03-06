@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'https://probably-winning-mongoose.ngrok-free.app',
+      '/api': 'http://localhost:8080',
     },
   },
 });

@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin; // uncomment for testing react client
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -130,7 +129,6 @@ public class RESTController {
      * @return a ResponseEntity containing the user's details, or an error if the user is not found
      * @throws Exception if an error occurs while processing the request or the user is not authenticated
      */
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(path = "/api/users/get")
     public ResponseEntity<Optional<User>> getUserDetails() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -154,7 +152,6 @@ public class RESTController {
      * 
      * @return a ResponseEntity containing the sorted list of users on the leaderboard
      */
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(path = "/api/users/leaderboard")
     public ResponseEntity<List<User>> getLeaderBoard() {
         List<User> users = repository.findAll();
@@ -169,7 +166,6 @@ public class RESTController {
      * @return a ResponseEntity with a success status
      * @throws Exception if an error occurs while processing the request or if the user is not authenticated
      */
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(path = "/api/users/add")
     public ResponseEntity<Object> addUserToList() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
