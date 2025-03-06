@@ -49,7 +49,7 @@ export default function Menu() {
             // get the user's details from the webserver's REST API
             fetch("/api/users/get", {
                 method: "GET",
-                 headers: {
+                headers: {
                     "Authorization": `Bearer ${jwt}`
                 }
             })
