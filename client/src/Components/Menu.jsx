@@ -19,7 +19,7 @@ export default function Menu() {
         const offlineButton = document.getElementById("offline");
         if (offlineButton.value === "false") {
             const jwt = sessionStorage.getItem("token");
-            fetch("/api/users/add", {
+            fetch("https://probably-winning-mongoose.ngrok-free.app/api/users/add", {
                 method: 'POST',
                 headers: {
                   "Authorization": `Bearer ${jwt}`
