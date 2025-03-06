@@ -7,12 +7,7 @@ export default function Leaderboard() {
 
     // fetch the leaderboard from the leaderboard API
     React.useEffect(() => {
-        fetch("/api/users/leaderboard", {
-            method: "GET",
-            headers: {
-                "ngrok-skip-browser-warning": "true",
-            }
-        })
+        fetch("/api/users/leaderboard")
             .then(res => {
                 if (res.status === 200) {
                     return res.json();

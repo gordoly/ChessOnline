@@ -52,8 +52,6 @@ export default function Menu() {
             fetch("/api/users/get", {
                 method: "GET",
                 headers: {
-                    "ngrok-skip-browser-warning": "true",
-                    "User-Agent": "MY-User-Agent",
                     "Authorization": `Bearer ${jwt}`
                 }
             })
@@ -63,12 +61,7 @@ export default function Menu() {
                     setUserData(resData);
 
                     // fetch the leader board from the API
-                    fetch("/api/users/leaderboard", {
-                        method: "GET",
-                        headers: {
-                            "ngrok-skip-browser-warning": "true",
-                        }
-                    })
+                    fetch("/api/users/leaderboard")
                         .then(res => {
                             if (res.status === 200) {
                                 return res.json();
