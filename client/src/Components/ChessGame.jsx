@@ -1,10 +1,10 @@
-import Header from './Header.js';
-import Board from './Board.js';
+import Header from './Header';
+import Board from './Board';
 import Marker from '../assets/marker.png'
 import PickPromotion from './PickPromotion';
 import React, { useRef, useState } from 'react';
 import Sidebar from './Sidebar';
-import Wait from './Wait.js';
+import Wait from './Wait';
 
 // function deals with displaying the chess board onto the screen and associated functionality
 export default function App(props) {

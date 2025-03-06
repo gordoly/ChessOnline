@@ -40,6 +40,7 @@ export default function Login() {
     else {
       const errorMsg = document.getElementById("error");
       const errorText = await response.text();
+      console.log(errorText);
       errorMsg.textContent = errorText;
     }
   }

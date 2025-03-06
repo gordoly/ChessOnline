@@ -49,7 +49,7 @@ export default function Menu() {
             // get the user's details from the webserver's REST API
             fetch("/api/users/get", {
                 method: "GET",
-                headers: {
+                 headers: {
                     "Authorization": `Bearer ${jwt}`
                 }
             })
@@ -98,26 +98,28 @@ export default function Menu() {
                 <button type="submit" style={{ marginLeft: "10px" }}>Play online</button>
             </form>
             <table>
-                <tr>
-                    <td>Rank:</td>
-                    <td>{ranking + 1}</td>
-                </tr>
-                <tr>
-                    <td>Ranking points:</td>
-                    <td>{Math.round(userData["score"])}</td>
-                </tr>
-                <tr>
-                    <td>Win Rate:</td>
-                    <td>{userData["matches"] === 0 ? "0%" : `${Math.round((userData["wins"] / userData["matches"]) * 100)}%`}</td>
-                </tr>
-                <tr>
-                    <td>Loss Rate:</td>
-                    <td>{userData["matches"] === 0 ? "0%" : `${Math.round((userData["losses"] / userData["matches"]) * 100)}%`}</td>
-                </tr>
-                <tr>
-                    <td>Total matches played:</td>
-                    <td>{userData["matches"]}</td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <td>Rank:</td>
+                        <td>{ranking + 1}</td>
+                    </tr>
+                    <tr>
+                        <td>Ranking points:</td>
+                        <td>{Math.round(userData["score"])}</td>
+                    </tr>
+                    <tr>
+                        <td>Win Rate:</td>
+                        <td>{userData["matches"] === 0 ? "0%" : `${Math.round((userData["wins"] / userData["matches"]) * 100)}%`}</td>
+                    </tr>
+                    <tr>
+                        <td>Loss Rate:</td>
+                        <td>{userData["matches"] === 0 ? "0%" : `${Math.round((userData["losses"] / userData["matches"]) * 100)}%`}</td>
+                    </tr>
+                    <tr>
+                        <td>Total matches played:</td>
+                        <td>{userData["matches"]}</td>
+                    </tr>
+                </tbody>
             </table>
         </React.Fragment>
     )
