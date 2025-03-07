@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,24 +46,13 @@ public class RESTController {
     }
 
     /**
-     * Forwards all get requests, except those beginning with a request to /api,
-     * to index.html, which performs its own routing.
-     * @return the string that forwards requests to index.html.
-     */
-    @GetMapping({
-        "/",
-        "/{path:^(?!static|api|.*\\.html$).*}/**"
-    })
-    public String forward() {
-        return "forward:/index.html";
-    }
-    /**
      * Registers a new user with the provided information in the request body of the post request.
      * Ensures that the user credentials are validated before saving the user.
      * 
      * @param user the user details from the request body to be registered
      * @return a ResponseEntity with a success message or an error message
      */
+    @CrossOrigin(origins = "https://gordoly.github.io/")
     @PostMapping("/api/users/auth/register")
     public ResponseEntity<String> createUser(@RequestBody User user) {
         String errMsg = null;
@@ -103,6 +92,7 @@ public class RESTController {
      * @return a ResponseEntity containing the JWT token if authentication is successful, 
      *         or an error message if authentication fails
      */
+    @CrossOrigin(origins = "https://gordoly.github.io/")
     @PostMapping("/api/users/auth/login")
     public ResponseEntity<String> authenticate(@RequestBody User user) {
         try {
@@ -113,6 +103,7 @@ public class RESTController {
 
             String jwtToken = jwtService.generateToken(user);
 
+            // if the user has not already been added to the Users manager, add them
             if (users.getUser(user.getUsername()) == 0) {
                 users.addUser(user.getUsername());
             }
@@ -129,6 +120,7 @@ public class RESTController {
      * @return a ResponseEntity containing the user's details, or an error if the user is not found
      * @throws Exception if an error occurs while processing the request or the user is not authenticated
      */
+    @CrossOrigin(origins = "https://gordoly.github.io/")
     @GetMapping(path = "/api/users/get")
     public ResponseEntity<Optional<User>> getUserDetails() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -152,6 +144,7 @@ public class RESTController {
      * 
      * @return a ResponseEntity containing the sorted list of users on the leaderboard
      */
+    @CrossOrigin(origins = "https://gordoly.github.io/")
     @GetMapping(path = "/api/users/leaderboard")
     public ResponseEntity<List<User>> getLeaderBoard() {
         List<User> users = repository.findAll();
@@ -160,12 +153,13 @@ public class RESTController {
     }
 
     /**
-     * Adds a user to a user manager if they do not already exist, allowing them to join
+     * Adds a user to the Users manager if they do not already exist, allowing them to join
      * a chess game session.
      * 
      * @return a ResponseEntity with a success status
      * @throws Exception if an error occurs while processing the request or if the user is not authenticated
      */
+    @CrossOrigin(origins = "https://gordoly.github.io/")
     @PostMapping(path = "/api/users/add")
     public ResponseEntity<Object> addUserToList() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
