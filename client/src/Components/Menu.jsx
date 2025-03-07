@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import React, {useState} from "react";
 
@@ -5,6 +6,7 @@ import React, {useState} from "react";
 export default function Menu() {
     const [userData, setUserData] = useState({"score": 0, "wins": 0, "losses": 0, "matches": 0});
     const [ranking, setRanking] = useState(-1);
+    const navigate = useNavigate();
 
     // function to indicate that the user intends to play chess online
     function offlineSubmit() {
@@ -25,16 +27,16 @@ export default function Menu() {
             })
                 .then(res => {
                     if (res["status"] === 200) {
-                        document.location.href = "/connect";
+                        navigate("/connect");
                     } else {
                         alert("Your session has timed out, please login again.");
                         sessionStorage.removeItem("token");
-                        document.location.href = "/login";
+                        navigate("/login");
                     }
                 });
         }
         else if (offlineButton.value === "true") {
-            document.location.href = "/play";
+            navigate("/play");
         }
         event.preventDefault();
     }
@@ -43,13 +45,15 @@ export default function Menu() {
     React.useEffect(() => {
         const jwt = sessionStorage.getItem("token");
         if (!jwt) {
-            document.location.href = "/login";
+            navigate("/login");
         }
         else {
             // get the user's details from the webserver's REST API
             fetch("/api/users/get", {
                 method: "GET",
                 headers: {
+                    "ngrok-skip-browser-warning": "true",
+                    "User-Agent": "MY-User-Agent",
                     "Authorization": `Bearer ${jwt}`
                 }
             })
@@ -59,7 +63,12 @@ export default function Menu() {
                     setUserData(resData);
 
                     // fetch the leader board from the API
-                    fetch("/api/users/leaderboard")
+                    fetch("/api/users/leaderboard", {
+                        method: "GET",
+                        headers: {
+                            "ngrok-skip-browser-warning": "true",
+                        }
+                    })
                         .then(res => {
                             if (res.status === 200) {
                                 return res.json();
@@ -83,7 +92,7 @@ export default function Menu() {
                 else {
                     alert("Your session has timed out, please login again.");
                     sessionStorage.removeItem("token");
-                    document.location.href = "/login";
+                    navigate("/login");
                 }
             });
         }

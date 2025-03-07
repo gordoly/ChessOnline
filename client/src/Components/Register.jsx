@@ -1,9 +1,11 @@
 import React from 'react';
 import '../App.css';
+import { useNavigate } from 'react-router-dom';
 
 // Function for the Register component, used for rendering the registration form and
 // handling the user's registration.
 export default function Register() {
+  const navigate = useNavigate();
   const [data, setData] = React.useState({
       username: "",
       password: "",
@@ -37,7 +39,7 @@ export default function Register() {
       }
       else {
         // if there are no registration errors redirect the user to the login page
-        window.location.href = "/login";
+        navigate("/login");
       }
     }
 
@@ -52,7 +54,7 @@ export default function Register() {
               <button onClick={register}>Register</button>
           </form>
           <br />
-          <a href="/login" className="register-login-link">Already have an account?</a>
+          <a href="#/login" className="register-login-link">Already have an account?</a>
       </div>
   );
 }

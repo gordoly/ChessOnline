@@ -5,6 +5,7 @@ import PickPromotion from './PickPromotion';
 import React, { useRef, useState } from 'react';
 import Sidebar from './Sidebar';
 import Wait from './Wait';
+import { useNavigate } from 'react-router-dom';
 
 // function deals with displaying the chess board onto the screen and associated functionality
 export default function App(props) {
@@ -28,6 +29,7 @@ export default function App(props) {
     const [waiting, setWaiting] = useState(true);
     const [conceded, setConcede] = useState(false);
     const [messages, setMessages] = useState([]);
+    const navigate = useNavigate();
 
     // effect to handle initial waiting state based on whether the user is playing online.
     if (!connected && waiting) {
@@ -236,7 +238,7 @@ export default function App(props) {
                     }
                     else {
                         sessionStorage.removeItem("token");
-                        document.location.href = "/login";
+                        navigate("/login");
                     }
                 })
                 .then(data => {
@@ -245,7 +247,7 @@ export default function App(props) {
                 });
             }
             else {
-                document.location.href = "/login";
+                navigate("/login");
             }
         }
     }, []);
@@ -389,7 +391,6 @@ export default function App(props) {
             <div className="App">
                 <Header />
                 { connected && username !== null && opponent !== "" && <h3>{username["name"]} vs {opponent}</h3> }
-
                 <Board 
                     right={xAdjust} 
                     down={yAdjust} 

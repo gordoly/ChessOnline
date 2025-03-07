@@ -1,9 +1,11 @@
 import React from 'react';
 import '../App.css';
+import { useNavigate } from 'react-router-dom';
 
 // Function for the Login component, used for rendering the login form and
 // handling the user's login including saving the user's JWT token.
 export default function Login() {
+  const navigate = useNavigate();
   const [data, setData] = React.useState({
     username: "",
     password: ""
@@ -35,12 +37,11 @@ export default function Login() {
       // JWT token to session storage
       const responseData = await response.text();
       sessionStorage.setItem("token", responseData);
-      window.location.href = "/menu";
+      navigate("/menu");
     }
     else {
       const errorMsg = document.getElementById("error");
       const errorText = await response.text();
-      console.log(errorText);
       errorMsg.textContent = errorText;
     }
   }
@@ -55,7 +56,7 @@ export default function Login() {
         <button onClick={login}>Login</button>
       </form>
       <br />
-      <a href="/register" className="register-login-link">Don't have an account?</a>
+      <a href="#/register" className="register-login-link">Don't have an account?</a>
     </div>
   );
 }

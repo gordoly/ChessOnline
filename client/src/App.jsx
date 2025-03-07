@@ -1,7 +1,7 @@
 import './App.css';
 import ChessGame from './Components/ChessGame';
 import Menu from './Components/Menu';
-import { Route, Routes, BrowserRouter } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import React from "react";
 import Register from './Components/Register';
 import Login from './Components/Login';
@@ -13,10 +13,12 @@ import Leaderboard from './Components/Leaderboard'
 function App() {
   
   return (
-    <BrowserRouter basename='/'>
-      <Routes path="/">
+    <Router>
+      <Routes>
 
-        <Route index element={<Index />} />
+        <Route path='/' element={
+          <Index />
+        } />
 
         <Route path='/menu' element={
           <Menu />
@@ -50,7 +52,7 @@ function App() {
         } />
 
       </Routes>
-    </BrowserRouter>
+    </Router>
   )
 }
 
