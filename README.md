@@ -6,7 +6,7 @@ ChessOnline is a full-stack application that allows players to play Chess agains
 
 ## Usage
 
-The web application has been deployed online to Github pages. Visit the webpage at https://gordoly.github.io/ChessOnline/.
+The front end of the application has been deployed online to Github pages, whilst the backend has been deployed using Google Cloud Platform. Visit the website at https://gordoly.github.io/ChessOnline/.
 
 ## Features
 
